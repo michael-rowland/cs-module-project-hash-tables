@@ -5,8 +5,6 @@ def word_count(s):
     punct = '":;,.-+=/\|[]{(})*^&'
     for p in punct:
         s = s.replace(p, '')
-    if s == '':
-        return {}
     for word in s.lower().split():
         wc[word] += 1
     return wc

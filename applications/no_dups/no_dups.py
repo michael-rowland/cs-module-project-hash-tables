@@ -1,5 +1,18 @@
 def no_dups(s):
-    # Your code here
+    output_string = ''
+    log = set()
+    for word in s.split():
+        if word not in log:
+            log.add(word)
+            output_string += f'{word} '
+        else:
+            pass
+    return output_string[:-1]
+
+    # loop over each word
+    # check if in set
+    # if it is, pass
+    # if it isn't, add to set, and append to ouput_string
 
 
 
