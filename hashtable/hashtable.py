@@ -22,7 +22,8 @@ class HashTable:
 
     def __init__(self, capacity):
         self.capacity = capacity
-        self.table = [None] * self.capacity
+        self.elements = 0
+        self.storage = [None] * self.capacity
 
 
     def get_num_slots(self):
@@ -35,7 +36,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -44,7 +45,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.elements / self.capacity
 
 
     def fnv1(self, key):
@@ -85,9 +86,25 @@ class HashTable:
 
         Implement this.
         """
-        i = self.hash_index(key)
-        self.table[i] = value
+        self.elements += 1
+        new_item = HashTableEntry(key, value)
+        location = self.hash_index(key)
+        # gets current location in storage
+        current = self.storage[location]
 
+        # check if anything is there, if not insert linked list (HashTableEntry)
+        if not current:
+            self.storage[location] = new_item
+        # otherwise, traverse until end, and update (rewrite recursively)
+        else:
+            while current.next:
+                current = current.next
+            current.next = new_item
+
+        # CHECK LOAD FACTOR > 0.7
+        current_load_factor = self.get_load_factor()
+        if current_load_factor > 0.7:
+            self.resize(self.capacity * 2)
 
     def delete(self, key):
         """
@@ -97,8 +114,29 @@ class HashTable:
 
         Implement this.
         """
-        i = self.hash_index(key)
-        self.table[i] = None
+        location = self.hash_index(key)
+        target = self.storage[location]
+
+        if target.key == key:
+            self.elements -= 1
+            if not target.next:
+                target.key = target.value = None
+            else:
+                self.storage[location] = target.next
+        else:
+            current_item = target
+            next_item = target.next
+            while next_item:
+                if next_item.key == key:
+                    self.elements -= 1
+                    current_item.next = next_item.next
+                    break
+                current_item = next_item
+                next_item = next_item.next
+            print(f"{key} not found")
+
+        # CHECK LOAD FACTOR < 0.2
+
 
 
     def get(self, key):
@@ -109,8 +147,13 @@ class HashTable:
 
         Implement this.
         """
-        i = self.hash_index(key)
-        return self.table[i]
+        target = self.storage[self.hash_index(key)]
+
+        while target:
+            if target.key == key:
+                return target.value
+            target = target.next
+        return None
 
 
     def resize(self, new_capacity):
@@ -120,7 +163,20 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        self.capacity = new_capacity
+        new_table = HashTable(new_capacity)
+
+        for item in self.storage:
+            if item:
+                new_table.put(item.key, item.value)
+                if item.next:
+                    next_item = item.next
+                    while next_item:
+                        new_table.put(next_item.key, next_item.value)
+                        next_item = next_item.next
+        
+        self.storage = new_table.storage
+        del new_table
 
 
 
@@ -152,9 +208,7 @@ if __name__ == "__main__":
     new_capacity = ht.get_num_slots()
 
     print(f"\nResized from {old_capacity} to {new_capacity}.\n")
-
+    ht.delete("line_12")
     # Test if data intact after resizing
     for i in range(1, 13):
         print(ht.get(f"line_{i}"))
-
-    print("")
