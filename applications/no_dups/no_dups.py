@@ -9,12 +9,6 @@ def no_dups(s):
             pass
     return output_string[:-1]
 
-    # loop over each word
-    # check if in set
-    # if it is, pass
-    # if it isn't, add to set, and append to ouput_string
-
-
 
 if __name__ == "__main__":
     print(no_dups(""))
