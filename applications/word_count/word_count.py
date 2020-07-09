@@ -1,6 +1,15 @@
-def word_count(s):
-    # Your code here
+from collections import Counter
 
+def word_count(s):
+    wc = Counter()
+    punct = '":;,.-+=/\|[]{(})*^&'
+    for p in punct:
+        s = s.replace(p, '')
+    if s == '':
+        return {}
+    for word in s.lower().split():
+        wc[word] += 1
+    return wc
 
 
 if __name__ == "__main__":
